@@ -64,6 +64,22 @@ app.MapPost("/expenses", (Expense expense, FinanceDb db) =>
     return Results.Created($"/expenses/{expense.Id}", expense);
 
 });
+
+app.MapDelete("/expenses/{id}", (int id, FinanceDb db) =>
+{
+    var expense = db.Expenses.Find(id);
+    if (expense is null)
+    {
+        return Results.NotFound();
+
+    }
+
+    db.Expenses.Remove(expense);
+    db.SaveChanges();
+    return Results.NoContent();
+
+});
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
