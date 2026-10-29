@@ -1,11 +1,20 @@
 using Scalar.AspNetCore;
+using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddDbContext<FinanceDb>(options =>
+    options.UseSqlite("Data Source=finance.db"));
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<FinanceDb>();
+    db.Database.EnsureCreated();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -37,17 +46,14 @@ app.MapGet("/weatherforecast", () =>
 
 app.MapGet("/hello", () => "Hello from my Personal Finance API!");
 
-var expenses = new List<Expense>
-{
-    new Expense("Taxi", 30m, "Transport"),
-    new Expense("Lunch", 65m, "Food")
-};
 
-app.MapGet("/expenses", () => expenses);
-app.MapPost("/expenses", (Expense expense) =>
+
+app.MapGet("/expenses", (FinanceDb db) => db.Expenses.ToList());
+app.MapPost("/expenses", (Expense expense, FinanceDb db) =>
 {
-    expenses.Add(expense);
-    return Results.Created("/expenses", expense);
+    db.Expenses.Add(expense);
+    db.SaveChanges();
+    return Results.Created($"/expenses/{expense.Id}", expense);
 
 });
 app.Run();
@@ -57,4 +63,9 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
 
-record Expense(string Description, decimal Amount, string category);
+record Expense(int Id, string Description, decimal Amount, string Category);
+
+class FinanceDb(DbContextOptions<FinanceDb> options) : DbContext(options)
+{
+    public DbSet<Expense> Expenses => Set<Expense>();
+}
