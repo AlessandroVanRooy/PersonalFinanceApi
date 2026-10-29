@@ -35,10 +35,18 @@ app.MapGet("/weatherforecast", () =>
 
 app.MapGet("/hello", () => "Hello from my Personal Finance API!");
 
-app.MapGet("/expenses", () => "Taxi: N$ 30.00");
+app.MapGet("/expenses", () => new[]
+{
+    new Expense("Taxi", 30m, "Transport"),
+    new Expense("Lunch", 65m, "Food")
+
+
+});
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
+record Expense(string Description, decimal Amount, string category);
