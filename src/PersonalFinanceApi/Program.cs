@@ -35,11 +35,17 @@ app.MapGet("/weatherforecast", () =>
 
 app.MapGet("/hello", () => "Hello from my Personal Finance API!");
 
-app.MapGet("/expenses", () => new[]
+var expenses = new List<Expense>
 {
     new Expense("Taxi", 30m, "Transport"),
     new Expense("Lunch", 65m, "Food")
+};
 
+app.MapGet("/expenses", () => expenses);
+app.MapPost("/expenses", (Expense expense) =>
+{
+    expenses.Add(expense);
+    return Results.Created("/expenses", expense);
 
 });
 app.Run();
