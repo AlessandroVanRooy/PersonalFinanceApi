@@ -48,7 +48,15 @@ app.MapGet("/hello", () => "Hello from my Personal Finance API!");
 
 
 
-app.MapGet("/expenses", (FinanceDb db) => db.Expenses.ToList());
+app.MapGet("/expenses/{id}", (int id, FinanceDb db) =>
+{
+    var expense = db.Expenses.Find(id);
+    if (expense is null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(expense);
+});
 app.MapPost("/expenses", (Expense expense, FinanceDb db) =>
 {
     db.Expenses.Add(expense);

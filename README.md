@@ -8,7 +8,8 @@ Part of my backend portfolio for the financial sector.
 - `GET /expenses` — list all expenses
 - `POST /expenses` — add a new expense
 - Interactive API docs and testing page (Scalar)
-
+- `GET /expenses/{id}` — get one expense by its ID (404 if not found)
+- Data saved in a SQLite database (EF Core), so it survives restarts
 ## Tech
 - C# / ASP.NET Core Minimal APIs
 - `decimal` for all money values (exact to the cent)
@@ -22,6 +23,5 @@ dotnet run
 Then open `http://localhost:5227/scalar` to see and test the API.
 
 ## Coming next
-- Database (EF Core + SQLite) so data is saved permanently
 - Tests (xUnit)
 - User logins (JWT)
