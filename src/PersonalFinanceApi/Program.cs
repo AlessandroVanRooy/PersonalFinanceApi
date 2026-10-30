@@ -1,5 +1,6 @@
 using Scalar.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -59,13 +60,9 @@ app.MapGet("/expenses/{id}", (int id, FinanceDb db) =>
 });
 app.MapPost("/expenses", (Expense expense, FinanceDb db) =>
 {
-    if (expense.Amount is <= 0)
+    if (ExpenseValidator.Validate(expense) is string errorMessage)
     {
-        return Results.BadRequest("Amount must be more than 0");
-    }
-    if (string.IsNullOrWhiteSpace(expense.Description))
-    {
-        return Results.BadRequest("Description is required");
+        return Results.BadRequest(errorMessage);
     }
     db.Expenses.Add(expense);
     db.SaveChanges();
@@ -96,14 +93,13 @@ app.MapPut("/expenses/{id}", (FinanceDb db, int id, Expense updated) =>
         return Results.NotFound();
     }
 
-    if (updated.Amount is <= 0)
+
+
+    if (ExpenseValidator.Validate(updated) is string errorMessage)
     {
-        return Results.BadRequest("Amount must be more than 0");
+        return Results.BadRequest(errorMessage);
     }
-    if (string.IsNullOrWhiteSpace(updated.Description))
-    {
-        return Results.BadRequest("Description is required");
-    }
+
 
     expense.Description = updated.Description;
     expense.Amount = updated.Amount;
@@ -120,7 +116,7 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 }
 
 
-class Expense
+public class Expense
 {
     public int Id { get; set; }
     public string Description { get; set; } = "";
@@ -129,6 +125,23 @@ class Expense
 
 
 }
+
+public static class ExpenseValidator
+{
+    public static string? Validate(Expense expense)
+    {
+        if (expense.Amount <= 0)
+        {
+            return "Amount must be more than 0";
+        }
+        if (string.IsNullOrWhiteSpace(expense.Description))
+        {
+            return "Description is required";
+        }
+        return null;
+    }
+}
+
 class FinanceDb(DbContextOptions<FinanceDb> options) : DbContext(options)
 {
     public DbSet<Expense> Expenses => Set<Expense>();
