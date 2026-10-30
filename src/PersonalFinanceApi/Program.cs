@@ -80,6 +80,21 @@ app.MapDelete("/expenses/{id}", (int id, FinanceDb db) =>
 
 });
 
+app.MapPut("/expenses/{id}", (FinanceDb db, int id, Expense updated) =>
+{
+    var expense = db.Expenses.Find(id);
+    if (expense is null)
+    {
+        return Results.NotFound();
+    }
+
+    expense.Description = updated.Description;
+    expense.Amount = updated.Amount;
+    expense.Category = updated.Category;
+
+    db.SaveChanges();
+    return Results.Ok(expense);
+});
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
@@ -87,8 +102,16 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
 
-record Expense(int Id, string Description, decimal Amount, string Category);
 
+class Expense
+{
+    public int Id { get; set; }
+    public string Description { get; set; } = "";
+    public decimal Amount { get; set; }
+    public string Category { get; set; } = "";
+
+
+}
 class FinanceDb(DbContextOptions<FinanceDb> options) : DbContext(options)
 {
     public DbSet<Expense> Expenses => Set<Expense>();
