@@ -6,15 +6,19 @@ Part of my backend portfolio for the financial sector.
 
 ## Features
 - `GET /expenses` — list all expenses
-- `POST /expenses` — add a new expense
-- Interactive API docs and testing page (Scalar)
 - `GET /expenses/{id}` — get one expense by its ID (404 if not found)
-- Data saved in a SQLite database (EF Core), so it survives restarts
+- `POST /expenses` — add a new expense
 - `PUT /expenses/{id}` — edit an expense
 - `DELETE /expenses/{id}` — delete an expense
--    - Validation: rejects amounts of 0 or less and empty descriptions (400 Bad Request)
+- Validation: rejects amounts of 0 or less and empty descriptions (400 Bad Request)
+- Data saved in a SQLite database (EF Core), so it survives restarts
+- Unit tests (xUnit) for the expense validation rules
+- Interactive API docs and testing page (Scalar)
+
 ## Tech
 - C# / ASP.NET Core Minimal APIs
+- EF Core + SQLite (database)
+- xUnit (unit tests)
 - `decimal` for all money values (exact to the cent)
 - Git feature-branch workflow
 
@@ -25,6 +29,10 @@ dotnet run
 ```
 Then open `http://localhost:5227/scalar` to see and test the API.
 
+## Run the tests
+```
+dotnet test tests/PersonalFinanceApi.Tests
+```
+
 ## Coming next
-- Tests (xUnit)
 - User logins (JWT)
