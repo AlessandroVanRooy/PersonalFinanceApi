@@ -59,6 +59,14 @@ app.MapGet("/expenses/{id}", (int id, FinanceDb db) =>
 });
 app.MapPost("/expenses", (Expense expense, FinanceDb db) =>
 {
+    if (expense.Amount is <= 0)
+    {
+        return Results.BadRequest("Amount must be more than 0");
+    }
+    if (string.IsNullOrWhiteSpace(expense.Description))
+    {
+        return Results.BadRequest("Description is required");
+    }
     db.Expenses.Add(expense);
     db.SaveChanges();
     return Results.Created($"/expenses/{expense.Id}", expense);
@@ -86,6 +94,15 @@ app.MapPut("/expenses/{id}", (FinanceDb db, int id, Expense updated) =>
     if (expense is null)
     {
         return Results.NotFound();
+    }
+
+    if (updated.Amount is <= 0)
+    {
+        return Results.BadRequest("Amount must be more than 0");
+    }
+    if (string.IsNullOrWhiteSpace(updated.Description))
+    {
+        return Results.BadRequest("Description is required");
     }
 
     expense.Description = updated.Description;
