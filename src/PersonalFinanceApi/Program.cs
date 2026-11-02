@@ -77,6 +77,7 @@ app.MapPost("/expenses", (Expense expense, FinanceDb db) =>
     }
     db.Expenses.Add(expense);
     db.SaveChanges();
+    Log.Information("Expense saved: {Description} for {Amount}", expense.Description, expense.Amount);
     return Results.Created($"/expenses/{expense.Id}", expense);
 
 });
