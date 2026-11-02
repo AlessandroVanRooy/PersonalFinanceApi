@@ -1,5 +1,5 @@
 # Personal Finance API
-
+![CI](https://github.com/AlessandroVanRooy/PersonalFinanceApi/actions/workflows/ci.yml/badge.svg)
 A backend API for tracking personal expenses, built with **C# and ASP.NET Core (.NET 10)**.
 
 Part of my backend portfolio for the financial sector.

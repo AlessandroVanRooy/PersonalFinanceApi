@@ -9,6 +9,10 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<FinanceDb>(options =>
     options.UseSqlite("Data Source=finance.db"));
 
+
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<FinanceDb>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -31,6 +35,7 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
+app.MapHealthChecks("/health");
 app.MapGet("/weatherforecast", () =>
 {
     var forecast = Enumerable.Range(1, 5).Select(index =>
