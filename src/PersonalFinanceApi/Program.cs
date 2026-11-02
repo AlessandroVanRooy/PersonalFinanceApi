@@ -1,7 +1,12 @@
+using Serilog;
 using Scalar.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog((context, config) =>
+{
+    config.WriteTo.Console();
+});
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -14,6 +19,7 @@ builder.Services.AddHealthChecks()
     .AddDbContextCheck<FinanceDb>();
 
 var app = builder.Build();
+app.UseSerilogRequestLogging();
 
 using (var scope = app.Services.CreateScope())
 {
