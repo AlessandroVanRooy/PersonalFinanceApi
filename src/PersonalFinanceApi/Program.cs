@@ -69,6 +69,13 @@ app.MapGet("/expenses/{id}", (int id, FinanceDb db) =>
     }
     return Results.Ok(expense);
 });
+
+app.MapGet("/expenses", (FinanceDb db) =>
+{
+    return Results.Ok(db.Expenses.ToList());
+
+});
+
 app.MapPost("/expenses", (Expense expense, FinanceDb db) =>
 {
     if (ExpenseValidator.Validate(expense) is string errorMessage)
