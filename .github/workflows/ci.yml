@@ -1,10 +1,12 @@
-name: CI
+name: CI/CD
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  schedule:
+    - cron: '0 20 * * 2'        # every Tuesday 20:00 UTC (22:00 Windhoek)
 
 jobs:
   build-and-test:
@@ -18,3 +20,23 @@ jobs:
 
       - name: Build and test
         run: dotnet test tests/PersonalFinanceApi.Tests
+
+  deploy:
+    needs: build-and-test                      # only if the tests passed
+    if: github.ref == 'refs/heads/main'        # only deploy from main
+    runs-on: ubuntu-latest
+    environment: production                    # the guard 🛂
+    steps:
+      - name: Download the code
+        uses: actions/checkout@v4
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Package the app
+        run: dotnet publish src/PersonalFinanceApi -c Release -o ./publish
+
+      - name: Deploy (practice)
+        run: echo "🚀 Deploying Personal Finance API to production!"
